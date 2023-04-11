@@ -1,8 +1,8 @@
 {
-  "name": "go_game_cdk",
+  "name": "goGameBackend",
   "version": "0.1.0",
   "bin": {
-    "go_game_cdk": "bin/go_game_cdk.js"
+    "goGameBackend": "bin/goGameBackend.js"
   },
   "scripts": {
     "build": "tsc",
