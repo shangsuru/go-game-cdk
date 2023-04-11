@@ -1,0 +1,10 @@
+{
+    "version": "2018-05-29",
+    "operation": "Query",
+    "query": {
+        "expression": "player1 = :player OR player2 = :player",
+        "expressionValues": {
+            ":player": $util.dynamodb.toDynamoDBJson($ctx.args.player)
+        }
+    }
+}

@@ -1,0 +1,37 @@
+#set($gameTermianted = true)
+#set($player1Won = $input.player1Won)
+
+#if ($input.player1Won)
+  #set($winnerRating = $input.oldRatingPlayer1)
+  #set($loserRating = $input.oldRatingPlayer2)
+#else
+  #set($winnerRating = $input.oldRatingPlayer2)
+  #set($loserRating = $input.oldRatingPlayer1)
+#end
+
+#set($ratingChange = 5 + 15 * $util.math.minVal(Double, Double)($loserRating / ($winnerRating + 1), 1)
+
+#if ($input.player1Won)
+  #set($newRatingPlayer1 = $input.oldRatingPlayer1 + $ratingChange)
+  #set($newRatingPlayer2 = $input.oldRatingPlayer2 - $ratingChange)
+#else
+  #set($newRatingPlayer1 = $input.oldRatingPlayer2 - $ratingChange)
+  #set($newRatingPlayer2 = $input.oldRatingPlayer1 + $ratingChange)
+#end
+
+{
+  "version" : "2018-05-29",
+  "operation" : "UpdateItem",
+  "key": {
+    "id": $util.dynamodb.toDynamoDBJson($input.gameId),
+  },
+  "update" : {
+    "expression" : "SET gameTerminated = :gameTerminated, player1Won = :player1Won, newRatingPlayer1 = :newRatingPlayer1, newRatingPlayer2 = :newRatingPlayer2",
+    "expressionValues" : {
+      ":gameTerminated": $util.dynamodb.toDynamoDBJson($game.gameTerminated),
+      ":player1Won": $util.dynamodb.toDynamoDBJson($game.player1Won),
+      ":newRatingPlayer1": $util.dynamodb.toDynamoDBJson($game.newRatingPlayer1),
+      ":newRatingPlayer2": $util.dynamodb.toDynamoDBJson($game.newRatingPlayer2)
+    }
+  },
+}

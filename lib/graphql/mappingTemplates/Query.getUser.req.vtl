@@ -1,0 +1,13 @@
+#set($username = $util.dynamodb.toDynamoDBJson($ctx.args.username))
+
+{
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "username-index",
+  "query": {
+    "expression": "username = :username",
+    "expressionValues": {
+      ":username": $username
+    }
+  }
+}
