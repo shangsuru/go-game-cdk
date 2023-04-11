@@ -1,0 +1,148 @@
+type Query {
+  getChallenges: [Challenge]
+  getActiveGame(
+    player1: String!
+    player2: String!
+  ): Game 
+  getOwnGames(
+    player: String!
+  ): [Game]
+  getUser(username: String!): User
+}
+
+type Mutation {
+  createChallenge(input: ChallengeInput!): Challenge
+  deleteChallenge(creator: String!): Challenge
+  createGame(input: GameInput!): Game
+  finishGame(
+    gameId: Int!
+    player1Won: Boolean!
+  ): Game
+  sendMessage(input: MessageInput!): Message
+  makeMove(input: MoveInput!): Move
+  updateUser(UserInput!): User
+}
+
+type Subscription {
+  onCreateChallenge: Challenge @aws_subscribe(mutations: ["createChallenge"])
+  onDeleteChallenge: Challenge @aws_subscribe(mutations: ["deleteChallenge"])
+  onCreateGame(challengeId: ID): Challenge @aws_subscribe(mutations: ["acceptChallenge"])
+  onSendMessage(gameId: ID): Message @aws_subscribe(mutations: ["sendMessage"])
+  onMakeMove(gameId: ID): Move @aws_subscribe(mutations: ["makeMove"])
+}
+
+type Player {
+  
+}
+
+type Challenge {
+  id: ID!
+  creator: String!
+  rating: Int!
+  boardSize: Int!
+  duration: Int!
+  timeIncrement: Int!
+  isRated: Boolean!
+  createdAt: AWSDateTime!
+}
+
+type ChallengeInput {
+  id: ID
+  boardSize: Int
+  duration: Int 
+  timeIncrement: Int 
+  isRated: Boolean
+}
+
+type Game {
+  id: ID!
+  player1: String!
+  player2: String!
+  isRated: Boolean!
+  boardSize: Int!
+  duration: Int!
+  timeIncrement: Int!
+  oldRatingPlayer1: Int!
+  oldRatingPlayer2: Int!
+  newRatingPlayer1: Int
+  newRatingPlayer2: Int
+  player1Won: Boolean
+  gameTerminated: Boolean
+  createdAt: AWSDateTime!
+}
+
+type GameInput {
+  id: ID
+  challengeId: ID!
+  player1: String!
+  player2: String!
+  isRated: Boolean
+  boardSize: Int
+  duration: Int
+  timeIncrement: Int
+  oldRatingPlayer1: Int!
+  oldRatingPlayer2: Int!
+}
+
+type Message {
+  id: ID!
+  text: String!
+  user: String!
+  createdAt: AWSDateTime!
+  gameId: ID!
+}
+
+type MessageInput {
+  id: ID 
+  text: String! 
+  gameId: ID!
+}
+
+type Move {
+  sender: String!
+  type: MoveType!
+  stonePosition: stonePosition
+  gameId: ID!
+  createdAt: AWSDateTime!
+}
+
+type MoveInput {
+  type: MoveType!
+  stonePosition: stonePosition
+  gameId: ID! 
+}
+
+type StonePosition {
+  x: Int!
+  y: Int!
+}
+
+enum MoveType {
+  MOVE
+  PASS
+  FORFEIT
+  RESULT
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  firstname: String
+  lastname: String
+  createdAt: AWSDateTime!
+  biography: String 
+  country: String
+  city: String
+}
+
+type UserInput {
+  id: ID
+  username: String!
+  email: String
+  firstname: String
+  lastname: String
+  biography: String
+  country: String
+  city: String
+}
