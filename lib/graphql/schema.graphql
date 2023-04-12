@@ -20,19 +20,15 @@ type Mutation {
   ): Game
   sendMessage(input: MessageInput!): Message
   makeMove(input: MoveInput!): Move
-  updateUser(UserInput!): User
+  updateUser(input: UserInput!): User
 }
 
 type Subscription {
   onCreateChallenge: Challenge @aws_subscribe(mutations: ["createChallenge"])
   onDeleteChallenge: Challenge @aws_subscribe(mutations: ["deleteChallenge"])
-  onCreateGame(challengeId: ID): Challenge @aws_subscribe(mutations: ["acceptChallenge"])
+  onCreateGame(challengeId: ID): Challenge @aws_subscribe(mutations: ["createGame"])
   onSendMessage(gameId: ID): Message @aws_subscribe(mutations: ["sendMessage"])
   onMakeMove(gameId: ID): Move @aws_subscribe(mutations: ["makeMove"])
-}
-
-type Player {
-  
 }
 
 type Challenge {
@@ -46,7 +42,7 @@ type Challenge {
   createdAt: AWSDateTime!
 }
 
-type ChallengeInput {
+input ChallengeInput {
   id: ID
   boardSize: Int
   duration: Int 
@@ -71,7 +67,7 @@ type Game {
   createdAt: AWSDateTime!
 }
 
-type GameInput {
+input GameInput {
   id: ID
   challengeId: ID!
   player1: String!
@@ -92,7 +88,7 @@ type Message {
   gameId: ID!
 }
 
-type MessageInput {
+input MessageInput {
   id: ID 
   text: String! 
   gameId: ID!
@@ -101,14 +97,14 @@ type MessageInput {
 type Move {
   sender: String!
   type: MoveType!
-  stonePosition: stonePosition
+  stonePosition: StonePosition
   gameId: ID!
   createdAt: AWSDateTime!
 }
 
-type MoveInput {
+input MoveInput {
   type: MoveType!
-  stonePosition: stonePosition
+  stonePosition: StonePosition
   gameId: ID! 
 }
 
@@ -136,7 +132,7 @@ type User {
   city: String
 }
 
-type UserInput {
+input UserInput {
   id: ID
   username: String!
   email: String
