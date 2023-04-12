@@ -26,7 +26,7 @@ type Mutation {
 type Subscription {
   onCreateChallenge: Challenge @aws_subscribe(mutations: ["createChallenge"])
   onDeleteChallenge: Challenge @aws_subscribe(mutations: ["deleteChallenge"])
-  onCreateGame(challengeId: ID): Challenge @aws_subscribe(mutations: ["createGame"])
+  onCreateGame(challengeId: ID): Game @aws_subscribe(mutations: ["createGame"])
   onSendMessage(gameId: ID): Message @aws_subscribe(mutations: ["sendMessage"])
   onMakeMove(gameId: ID): Move @aws_subscribe(mutations: ["makeMove"])
 }
@@ -94,32 +94,6 @@ input MessageInput {
   gameId: ID!
 }
 
-type Move {
-  sender: String!
-  type: MoveType!
-  stonePosition: StonePosition
-  gameId: ID!
-  createdAt: AWSDateTime!
-}
-
-input MoveInput {
-  type: MoveType!
-  stonePosition: StonePosition
-  gameId: ID! 
-}
-
-type StonePosition {
-  x: Int!
-  y: Int!
-}
-
-enum MoveType {
-  MOVE
-  PASS
-  FORFEIT
-  RESULT
-}
-
 type User {
   id: ID!
   username: String!
@@ -141,4 +115,20 @@ input UserInput {
   biography: String
   country: String
   city: String
+}
+
+type Move {
+  sender: String!
+  gameId: ID!
+  moveType: String!
+  x: Int
+  y: Int
+  createdAt: AWSDateTime!
+}
+
+input MoveInput {
+  gameId: ID! 
+  x: Int 
+  y: Int
+  moveType: String!
 }
