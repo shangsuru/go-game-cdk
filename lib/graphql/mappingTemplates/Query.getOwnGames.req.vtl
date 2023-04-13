@@ -1,10 +1,11 @@
 {
     "version": "2018-05-29",
-    "operation": "Query",
-    "query": {
-        "expression": "player1 = :player OR player2 = :player",
+    "operation": "Scan",
+    "filter": {
+        "expression": "(player1 = :player OR player2 = :player) AND gameTerminated = :gameTerminated",
         "expressionValues": {
-            ":player": $util.dynamodb.toDynamoDBJson($ctx.args.player)
+            ":player": $util.dynamodb.toDynamoDBJson($ctx.args.player),
+            ":gameTerminated": {"BOOL": true}
         }
     }
 }

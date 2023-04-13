@@ -1,16 +1,13 @@
 import {
 	CfnOutput,
-	Expiration,
 	RemovalPolicy,
 	Stack,
 	StackProps,
 } from 'aws-cdk-lib'
 import {
 	AccountRecovery,
-	CfnUserPoolGroup,
 	UserPool,
 	UserPoolClient,
-	UserPoolOperation,
 	VerificationEmailStyle,
 } from 'aws-cdk-lib/aws-cognito'
 import { Construct } from 'constructs'
@@ -19,15 +16,13 @@ import {
 	UserPoolAuthenticationProvider,
 } from '@aws-cdk/aws-cognito-identitypool-alpha'
 import { IRole } from 'aws-cdk-lib/aws-iam'
-import { Code, IFunction, Runtime, Function } from 'aws-cdk-lib/aws-lambda'
+import { Code, Runtime, Function } from 'aws-cdk-lib/aws-lambda'
 import * as path from 'path'
 import { Table } from 'aws-cdk-lib/aws-dynamodb'
 
 interface AuthStackProps extends StackProps {
 	readonly stage: string
 	readonly userpoolConstructName: string
-	readonly hasCognitoGroups: boolean
-	readonly groupNames?: string[]
 	readonly identitypoolConstructName: string
 	readonly userTable: Table
 }
@@ -45,7 +40,7 @@ export class AuthStack extends Stack {
 			runtime: Runtime.NODEJS_16_X,
 			handler: 'addUserToDB.main',
 			code: Code.fromAsset(
-				path.join(__dirname, 'functions/postConfirmTrigger')
+				path.join(__dirname, 'functions')
 			),
 			environment: {
 				TABLENAME: props.userTable.tableName,
@@ -74,20 +69,6 @@ export class AuthStack extends Stack {
 		})
 
 		props.userTable.grantWriteData(addUserFunc)
-
-		if (props.hasCognitoGroups) {
-			props.groupNames?.forEach(
-				(groupName) =>
-					new CfnUserPoolGroup(
-						this,
-						`${props.userpoolConstructName}${groupName}Group`,
-						{
-							userPoolId: userPool.userPoolId,
-							groupName: groupName,
-						}
-					)
-			)
-		}
 
 		const userPoolClient = new UserPoolClient(
 			this,

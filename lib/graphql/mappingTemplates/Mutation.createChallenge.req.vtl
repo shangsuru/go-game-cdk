@@ -1,5 +1,5 @@
 $util.qr($ctx.args.input.put("id", $util.autoId()))
-$util.qr($ctx.args.input.put("owner", $ctx.identity.username))
+$util.qr($ctx.args.input.put("creator", $ctx.identity.username))
 $util.qr($ctx.args.input.put("createdAt", $util.time.nowISO8601()))
 
 #set( $PutItemRequest = {

@@ -5,16 +5,14 @@
     "id": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
   },
   "update": {
-    "expression": "SET email = :email, firstname = :firstname, lastname = :lastname, biography = :biography, country = :country, city = :city, updatedAt = :updatedAt",
+    "expression": "SET email = :email, firstname = :firstname, lastname = :lastname, biography = :biography, country = :country, city = :city",
     "expressionValues": {
-      ":username": $util.dynamodb.toDynamoDBJson($ctx.args.input.username),
       ":email": $util.dynamodb.toDynamoDBJson($ctx.args.input.email),
       ":firstname": $util.dynamodb.toDynamoDBJson($ctx.args.input.firstname),
       ":lastname": $util.dynamodb.toDynamoDBJson($ctx.args.input.lastname),
       ":biography": $util.dynamodb.toDynamoDBJson($ctx.args.input.biography),
       ":country": $util.dynamodb.toDynamoDBJson($ctx.args.input.country),
       ":city": $util.dynamodb.toDynamoDBJson($ctx.args.input.city),
-      ":updatedAt": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601())
     }
   }
 }

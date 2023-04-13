@@ -1,6 +1,7 @@
 import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib'
 import { Table } from 'aws-cdk-lib/aws-dynamodb'
 import { Construct } from 'constructs'
+import { Code, Runtime, Function } from 'aws-cdk-lib/aws-lambda'
 import * as path from 'path'
 import {
 	GraphqlApi,
@@ -43,6 +44,29 @@ export class APIStack extends Stack {
 			xrayEnabled: true,
 		})
 
+		const finishGameFunc = new Function(this, 'finishGameFunc', {
+			runtime: Runtime.NODEJS_16_X,
+			handler: 'finishGame.main',
+			code: Code.fromAsset(
+				path.join(__dirname, 'functions')
+			),
+			environment: {
+				TABLENAME: props.gameTable.tableName,
+			},
+		})
+
+		props.gameTable.grantReadWriteData(finishGameFunc)
+
+		const lambdaDataSource = api.addLambdaDataSource(
+			'LambdaDataSource',
+			finishGameFunc
+		)
+		
+		lambdaDataSource.createResolver({
+			typeName: 'Mutation',
+			fieldName: 'finishGame',
+		})
+
 		const userTableDataSource = api.addDynamoDbDataSource(
 			'UserTableDataSource',
 			props.userTable
@@ -71,6 +95,17 @@ export class APIStack extends Stack {
 			),
 		})
 
+		userTableDataSource.createResolver({
+			typeName: 'Query',
+			fieldName: 'getUserByUsername',
+			requestMappingTemplate: MappingTemplate.fromFile(
+				path.join(__dirname, 'graphql/mappingTemplates/Query.getUserByUsername.req.vtl')
+			),
+			responseMappingTemplate: MappingTemplate.fromFile(
+				path.join(__dirname, 'graphql/mappingTemplates/Query.getUserByUsername.res.vtl')
+			),
+		})
+
 		const gameTableDataSource = api.addDynamoDbDataSource(
 			'GameTableDataSource',
 			props.gameTable
@@ -83,18 +118,6 @@ export class APIStack extends Stack {
 				path.join(
 					__dirname,
 					'graphql/mappingTemplates/Mutation.createGame.req.vtl'
-				)
-			),
-			responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-		})
-
-		gameTableDataSource.createResolver({
-			typeName: 'Mutation',
-			fieldName: 'finishGame',
-			requestMappingTemplate: MappingTemplate.fromFile(
-				path.join(
-					__dirname,
-					'graphql/mappingTemplates/Mutation.finishGame.req.vtl'
 				)
 			),
 			responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
@@ -124,7 +147,7 @@ export class APIStack extends Stack {
 
 		const messageTableDataSource = api.addDynamoDbDataSource(
 			'MessageTableDataSource',
-			props.gameTable
+			props.messageTable
 		)
 
 		messageTableDataSource.createResolver({
@@ -141,7 +164,7 @@ export class APIStack extends Stack {
 
 		const moveTableDataSource = api.addDynamoDbDataSource(
 			'MoveTableDataSource',
-			props.gameTable
+			props.moveTable
 		)
 
 		moveTableDataSource.createResolver({
@@ -158,7 +181,7 @@ export class APIStack extends Stack {
 
 		const challengeTableDataSource = api.addDynamoDbDataSource(
 			'ChallengeTableDataSource',
-			props.gameTable
+			props.challengeTable
 		)
 
 		challengeTableDataSource.createResolver({

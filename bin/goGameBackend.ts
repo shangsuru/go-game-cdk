@@ -11,8 +11,6 @@ const databaseStack = new DatabaseStack(app, 'DatabaseStack', {})
 
 const authStack = new AuthStack(app, 'AuthStack', {
 	stage: 'dev',
-	hasCognitoGroups: true,
-	groupNames: ['admin'],
 	userpoolConstructName: 'GoGameUserPool',
 	identitypoolConstructName: 'GoGameIdentityPool',
 	userTable: databaseStack.userTable,
