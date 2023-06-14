@@ -1,146 +1,149 @@
 type Query {
-    getChallenges: ChallengeConnection
-    getActiveGame(player1: String!, player2: String!): GameConnection
-    getOwnGames(player: String!): GameConnection
-    getUserByUsername(username: String!): UserConnection
-    getUser: User
+	getChallenges: ChallengeConnection
+	getActiveGame(player1: String!, player2: String!): GameConnection
+	getOwnGames(player: String!): GameConnection
+	getUserByUsername(username: String!): UserConnection
+	getUser: SettingsData
 }
 
 type Mutation {
-    createChallenge(input: ChallengeInput!): Challenge
-    deleteChallenge(id: ID!): Challenge
-    createGame(input: GameInput!): Game
-    finishGame(
-        id: ID!
-        player1Won: Boolean!
-    ): Game
-    sendMessage(input: MessageInput!): Message
-    makeMove(input: MoveInput!): Move
-    updateUser(input: UserInput!): User
+	createChallenge(input: ChallengeInput!): Challenge
+	deleteChallenge(id: ID!): Challenge
+	createGame(input: GameInput!): Game
+	finishGame(id: ID!, player1Won: Boolean!): Game
+	sendMessage(input: MessageInput!): Message
+	makeMove(input: MoveInput!): Move
+	updateUser(input: UserInput!): User
 }
 
 type Subscription {
-    onCreateChallenge: Challenge @aws_subscribe(mutations: ["createChallenge"])
-    onDeleteChallenge: Challenge @aws_subscribe(mutations: ["deleteChallenge"])
-    onCreateGame(challengeId: ID): Game @aws_subscribe(mutations: ["createGame"])
-    onSendMessage(gameId: ID): Message @aws_subscribe(mutations: ["sendMessage"])
-    onMakeMove(gameId: ID): Move @aws_subscribe(mutations: ["makeMove"])
+	onCreateChallenge: Challenge @aws_subscribe(mutations: ["createChallenge"])
+	onDeleteChallenge: Challenge @aws_subscribe(mutations: ["deleteChallenge"])
+	onCreateGame(challengeId: ID): Game @aws_subscribe(mutations: ["createGame"])
+	onSendMessage(gameId: ID): Message @aws_subscribe(mutations: ["sendMessage"])
+	onMakeMove(gameId: ID): Move @aws_subscribe(mutations: ["makeMove"])
 }
 
 type Challenge {
-    id: ID!
-    creator: String!
-    rating: Int!
-    boardSize: Int!
-    duration: Int!
-    timeIncrement: Int!
-    isRated: Boolean!
-    createdAt: AWSDateTime!
+	id: ID!
+	creator: String!
+	rating: Int!
+	boardSize: Int!
+	duration: Int!
+	timeIncrement: Int!
+	isRated: Boolean!
+	createdAt: AWSDateTime!
 }
 
 type ChallengeConnection {
-    items: [Challenge!]
-    nextToken: String
+	items: [Challenge!]
+	nextToken: String
 }
 
 input ChallengeInput {
-    id: ID
-    rating: Int
-    boardSize: Int
-    duration: Int
-    timeIncrement: Int
-    isRated: Boolean
+	id: ID
+	rating: Int
+	boardSize: Int
+	duration: Int
+	timeIncrement: Int
+	isRated: Boolean
 }
 
 type Game {
-    id: ID!
-    player1: String!
-    player2: String!
-    isRated: Boolean!
-    boardSize: Int!
-    duration: Int!
-    timeIncrement: Int!
-    oldRatingPlayer1: Int!
-    oldRatingPlayer2: Int!
-    newRatingPlayer1: Int
-    newRatingPlayer2: Int
-    player1Won: Boolean
-    gameTerminated: Boolean
-    createdAt: AWSDateTime!
+	id: ID!
+	player1: String!
+	player2: String!
+	isRated: Boolean!
+	boardSize: Int!
+	duration: Int!
+	timeIncrement: Int!
+	oldRatingPlayer1: Int!
+	oldRatingPlayer2: Int!
+	newRatingPlayer1: Int
+	newRatingPlayer2: Int
+	player1Won: Boolean
+	gameTerminated: Boolean
+	createdAt: AWSDateTime!
 }
 
 type GameConnection {
-    items: [Game!]
-    nextToken: String
+	items: [Game!]
+	nextToken: String
 }
 
 input GameInput {
-    id: ID
-    challengeId: ID!
-    player1: String!
-    player2: String!
-    isRated: Boolean
-    boardSize: Int
-    duration: Int
-    timeIncrement: Int
-    oldRatingPlayer1: Int!
-    oldRatingPlayer2: Int!
+	id: ID
+	challengeId: ID!
+	player1: String!
+	player2: String!
+	isRated: Boolean
+	boardSize: Int
+	duration: Int
+	timeIncrement: Int
+	oldRatingPlayer1: Int!
+	oldRatingPlayer2: Int!
 }
 
 type Message {
-    id: ID!
-    text: String!
-    user: String!
-    createdAt: AWSDateTime!
-    gameId: ID!
+	id: ID!
+	text: String!
+	user: String!
+	createdAt: AWSDateTime!
+	gameId: ID!
 }
 
 input MessageInput {
-    id: ID
-    text: String!
-    gameId: ID!
+	id: ID
+	text: String!
+	gameId: ID!
 }
 
 type User {
-    id: ID!
-    username: String!
-    email: String!
-    firstname: String
-    lastname: String
-    createdAt: AWSDateTime!
-    biography: String
-    country: String
-    city: String
+	id: ID!
+	username: String!
+	email: String
+	firstname: String
+	lastname: String
+	createdAt: AWSDateTime!
+	biography: String
+	country: String
+	city: String
+}
+
+type SettingsData {
+	firstname: String
+	lastname: String
+	biography: String
+	country: String
+	city: String
 }
 
 type UserConnection {
-    items: [User!]
-    nextToken: String
+	items: [User!]
+	nextToken: String
 }
 
 input UserInput {
-    id: ID
-    username: String
-    email: String!
-    firstname: String!
-    lastname: String!
-    biography: String!
-    country: String!
-    city: String!
+	id: ID
+	firstname: String
+	lastname: String
+	biography: String
+	country: String!
+	city: String
 }
 
 type Move {
-    sender: String!
-    gameId: ID!
-    moveType: String!
-    x: Int
-    y: Int
-    createdAt: AWSDateTime!
+	sender: String!
+	gameId: ID!
+	moveType: String!
+	x: Int
+	y: Int
+	createdAt: AWSDateTime!
 }
 
 input MoveInput {
-    gameId: ID!
-    x: Int
-    y: Int
-    moveType: String!
+	gameId: ID!
+	x: Int
+	y: Int
+	moveType: String!
 }
